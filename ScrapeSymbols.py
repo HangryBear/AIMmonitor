@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
+# only re-run this when you want to refresh the list of tickers
+
 headings = []
 
 for page in range(1, 7):
@@ -20,6 +22,7 @@ for page in range(1, 7):
         for element in row.find_all("td"):
             if first:
                 rowData = (element.text).replace(',', '') # strip commas from numbers
+                rowData += '.L' # DISABLE THIS LINE, IF NOT LSE STOCK SYMBOLS
                 first = False
             else:
                 rowData = rowData + "," + (element.text).replace(',', '') # strip commas from numbers
