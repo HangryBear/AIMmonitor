@@ -9,7 +9,7 @@ This script is a work in progress, and at this time it only concatenates all the
 
 Future plans are to:
 1. perform stock screening operations, 
-2. display tables and graphs in Streamlit,
+2. display company names, tables and graphs in Streamlit,
 3. email a daily update.
 
 # ScrapeSymbols.py
