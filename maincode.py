@@ -9,6 +9,42 @@ from ta.volatility import BollingerBands
 from ta.trend import MACD
 from ta.momentum import RSIIndicator
 
+def displaystreamlit(stockDatacollection):
+    # Generate web page
+    option = st.sidebar.selectbox('Select one symbol', ( list(stockDataCollection)))
+
+    df = stockDataCollection[option]
+
+    indicator_bb = BollingerBands(df['Close'])
+
+    bb = df
+    bb['bb_h'] = indicator_bb.bollinger_hband()
+    bb['bb_l'] = indicator_bb.bollinger_lband()
+    bb = bb[['Close','bb_h','bb_l']]
+
+    macd = MACD(df['Close']).macd()
+
+    rsi = RSIIndicator(df['Close']).rsi()
+
+    st.write('Stock Bollinger Bands')
+
+    st.line_chart(bb)
+
+    progress_bar = st.progress(0)
+
+    # https://share.streamlit.io/daniellewisdl/streamlit-cheat-sheet/app.py
+
+    st.write('Stock MACD')
+    st.area_chart(macd)
+
+    st.write('Stock RSI ')
+    st.line_chart(rsi)
+
+    st.write('Recent data ')
+    # sets the dates in the right format
+    df.index = df.index.strftime('%d-%m-%Y')
+    st.dataframe(df.tail(10))
+
 def getData(sym): # this function gets ticker data, and saves/updates pickle
     today = date.today()
     file = "datasets/"+sym
@@ -45,7 +81,6 @@ def getData(sym): # this function gets ticker data, and saves/updates pickle
         except Exception as e:
             print("**** Error retrieving data for " + sym)
             #print(e)
-        
 
     return stockData
 
@@ -60,47 +95,11 @@ if __name__ == "__main__":
                         
         #if index == 2: break # only do the first few for debugging
 
-    ### STREAMLIT CODE ###
+    print("Update of stock data complete")
 
-    #Streamlit stock selector
-    option = st.sidebar.selectbox('Select one symbol', ( list(stockDataCollection)))
-
-    df = stockDataCollection[option]
-
-    indicator_bb = BollingerBands(df['Close'])
-
-    bb = df
-    bb['bb_h'] = indicator_bb.bollinger_hband()
-    bb['bb_l'] = indicator_bb.bollinger_lband()
-    bb = bb[['Close','bb_h','bb_l']]
-
-    macd = MACD(df['Close']).macd()
-
-    rsi = RSIIndicator(df['Close']).rsi()
-
-    st.write('Stock Bollinger Bands')
-
-    st.line_chart(bb)
-
-    progress_bar = st.progress(0)
-
-    # https://share.streamlit.io/daniellewisdl/streamlit-cheat-sheet/app.py
-
-    st.write('Stock Moving Average Convergence Divergence (MACD)')
-    st.area_chart(macd)
-
-    st.write('Stock RSI ')
-    st.line_chart(rsi)
-
-
-    st.write('Recent data ')
-    st.dataframe(df.tail(10))
-
-
-
-        # for debugging, print latest 5 days worth of data
-    # print(stockData.tail())
-
+    #generate our Streamlit based results site
+    displaystreamlit(stockDataCollection)
+    
     #p = np.array(data['Date''Close']) # 52-weeks of closing prices
     #closePrice = p[1]
     #slicep = p[1::5].copy() # take every 5th day
