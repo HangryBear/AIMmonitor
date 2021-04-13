@@ -20,6 +20,3 @@ This script can easily be modified to scrape any other symbols lists. If you use
 
 # SingleStockDownloader.py
 Saves one symbol to ./datasets/singleSymbol.csv, this shows you exactly what's in the Yahoo Finance Dataframe, which you may find handy for development purposes. 
-
-# streamlitTest.py
-Copied code from a website. Yet to be modified, but intention is to use it as an interface to the main code.
