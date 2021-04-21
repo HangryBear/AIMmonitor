@@ -1,5 +1,7 @@
 # AIMmonitor
 
+Run the code live from the web here: https://share.streamlit.io/hangrybear/aimmonitor/main/maincode.py
+
 # maincode.py
 Uses a provided set of symbols (use ScrapeSymbols.py to generate/update symbols.csv (in ./dataset)), and downloads the last 1 year's worth of OHLC data for each symbol (pickling each one to its own file in ./dataset). 
 
