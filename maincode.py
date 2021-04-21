@@ -9,9 +9,31 @@ from ta.volatility import BollingerBands
 from ta.trend import MACD
 from ta.momentum import RSIIndicator
 
+# To run the Streamlit dashboard in your browser,
+# execute this in the terminal: 
+# streamlit run d:\Dropbox\GIT\AIMmonitor\maincode.py
+
 def displaystreamlit(stockDatacollection):
     # Generate web page
+
+    # hack to adjust sidebar width
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+            width: 400px;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
+            width: 400px;
+            margin-left: -400px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     option = st.sidebar.selectbox('Select one symbol', ( list(stockDataCollection)))
+
 
     df = stockDataCollection[option]
 
@@ -25,8 +47,10 @@ def displaystreamlit(stockDatacollection):
     macd = MACD(df['Close']).macd()
 
     rsi = RSIIndicator(df['Close']).rsi()
+    
+    st.title(option)
 
-    st.write('Stock Bollinger Bands')
+    st.write('Bollinger Bands')
 
     st.line_chart(bb)
 
@@ -34,10 +58,10 @@ def displaystreamlit(stockDatacollection):
 
     # https://share.streamlit.io/daniellewisdl/streamlit-cheat-sheet/app.py
 
-    st.write('Stock MACD')
+    st.write('MACD')
     st.area_chart(macd)
 
-    st.write('Stock RSI ')
+    st.write('RSI ')
     st.line_chart(rsi)
 
     st.write('Recent data ')
@@ -60,9 +84,10 @@ def getData(sym): # this function gets ticker data, and saves/updates pickle
         if finalDateInFile < today: 
             # top up the file with the missing data only, to reduce data downloads
             print("Saved data found for " + sym + ", updating to today's date")
-            missingData = data.DataReader(sym, start=finalDateInFile, end=today, data_source='yahoo')
             
             try:
+                missingData = data.DataReader(sym, start=finalDateInFile, end=today, data_source='yahoo')
+            
                 stockData = stockData.append(missingData)
                 stockData.to_pickle(file)
             except:
@@ -87,11 +112,14 @@ def getData(sym): # this function gets ticker data, and saves/updates pickle
 if __name__ == "__main__":
     
     symbols = pd.read_csv('datasets/symbols.csv', usecols=[0,1], header=None)
-    
     stockDataCollection = {} # make a dictionary of all the ticker data
+
     for index, row in symbols.iterrows(): 
         ticker = row[0].strip()
-        stockDataCollection[ticker] = getData(ticker)
+        tickerAndCompany = row.to_string(header=False, index=False)
+        tickerAndCompany = tickerAndCompany.split("ORD",1)[0]
+        tickerAndCompany = tickerAndCompany.replace("\n",",  ")
+        stockDataCollection[tickerAndCompany] = getData(ticker)
                         
         #if index == 2: break # only do the first few for debugging
 
